@@ -1,0 +1,150 @@
+@import "tailwindcss";
+@import "./fonts.css";
+
+@theme {
+  --breakpoint-900: 900px;
+  --breakpoint-1600: 1600px;
+}
+
+@font-face {
+  font-family: "Trend Sans Five";
+  src: url("/fonts/trend-sans-five.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Trend Sans One";
+  src: url("/fonts/Trend-Sans-One-Regular.ttf") format("truetype");
+}
+
+.screen {
+  height: calc(100vh);
+}
+
+:root {
+  --reduced-nav: calc(100vh - 80px);
+  --bg: #281549;
+  --pink: rgb(255, 79, 243);
+  --fade-pink: rgba(255, 79, 243, 0.05);
+  --blue: #323c8c;
+  --yellow: #cdaf0d;
+  --darkpurple: rgb(60, 6, 139);
+  --gray: #d9d9d9;
+  --fadebg: #453064;
+  --postbg: #5519ad;
+}
+
+body {
+  background-color: #281549;
+}
+
+.max {
+  max-width: 2000px;
+  margin: 0 auto;
+}
+
+.linear-gradient {
+  background: rgb(131, 46, 255);
+  background: linear-gradient(
+    90deg,
+    rgba(131, 46, 255, 1) 22%,
+    rgba(254, 79, 242, 1) 100%
+  );
+  transition: background 0.3s ease;
+}
+
+.linear-gradient-bg {
+  background: rgb(131, 46, 255);
+  background: linear-gradient(
+    180deg,
+    rgba(60, 6, 139, 1) 50%,
+    rgba(254, 79, 242, 1) 100%
+  );
+  transition: background 0.3s ease;
+}
+.about-button {
+  position: relative;
+  border-radius: 50px; /* Adjust border-radius as needed */
+  transition: all 0.3s ease;
+  background: transparent;
+  overflow: hidden;
+}
+
+.about-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  padding: 3px; /* Adjust the border width as needed */
+  background: linear-gradient(
+    90deg,
+    rgba(131, 46, 255, 1) 22%,
+    rgba(254, 79, 242, 1) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+}
+
+.about-button:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(131, 46, 255, 1) 22%,
+    rgba(254, 79, 242, 1) 100%
+  );
+}
+
+.linear-gradient-nav {
+  background: rgb(131, 46, 255);
+  background: linear-gradient(
+    90deg,
+    rgba(131, 46, 255, 1) 22%,
+    rgba(254, 79, 242, 1) 100%
+  );
+  transition: background 0.3s ease;
+}
+
+.gradient-border {
+  border: 3px solid;
+  padding: 20px; /* Adjust padding as needed */
+  transition: border-image 0.3s ease;
+}
+
+.linear-gradient:hover {
+  background: transparent;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.center-x {
+  left: 50%;
+  transform: translateX(-50%);
+}
+.center-y {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.shadow-text {
+  text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.3), 1px -1px 0 rgba(0, 0, 0, 0.3),
+    -1px 1px 0 rgba(0, 0, 0, 0.3), 1px 1px 0 rgba(0, 0, 0, 0.3),
+    0 0 4px rgba(255, 255, 255, 0.7), 0 0 8px rgba(255, 255, 255, 0.7),
+    0 0 12px rgba(255, 255, 255, 0.7), 0 0 16px rgba(255, 255, 255, 0.7);
+}
+
+.shadow-text-pink {
+  text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.3), 1px -1px 0 rgba(0, 0, 0, 0.3),
+    -1px 1px 0 rgba(0, 0, 0, 0.3), 1px 1px 0 rgba(0, 0, 0, 0.3), 0 0 4px #ff4ff3,
+    0 0 8px #ff4ff3, 0 0 12px #ff4ff3, 0 0 16px #ff4ff3;
+}
