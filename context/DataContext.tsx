@@ -1,14 +1,15 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { auth } from "../firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
-import { get, ref, getDatabase, onValue } from "firebase/database"; // Import onValue
+import { get, ref, getDatabase, onValue } from "firebase/database";
+import { db } from "../firebase";
 
 export const DataContext = createContext<any | null>(null);
 
 import { Post } from "../data/Post";
 import { Event } from "../data/Event";
 import { Like } from "../data/Like";
-
+import { Article } from "../data/Article";
 interface View {
   id: string;
   users: string[];
@@ -24,12 +25,13 @@ function DataContextProvider({ children }: { children: ReactNode }) {
   const [eventLikes, setEventLikes] = useState<Like[]>([]);
   const [postViews, setPostViews] = useState<View[]>([]);
   const [eventViews, setEventViews] = useState<View[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user && user.emailVerified) {
         setAuthUser(user);
-        const db = getDatabase();
+
         const userRef = ref(db, "users/" + user.uid);
         const snapshot = await get(userRef);
         if (snapshot.exists()) {
@@ -197,6 +199,37 @@ function DataContextProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const articlesRef = ref(db, "articles");
+
+    const unsubscribe = onValue(articlesRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const articlesArray = Object.keys(data).map((key) => ({
+          id: key,
+          ...data[key],
+        }));
+
+        // Sort articles by datePosted in descending order
+        articlesArray.sort(
+          (a, b) =>
+            new Date(b.datePosted).getTime() - new Date(a.datePosted).getTime()
+        );
+
+        // Mark the most recent article as "latest"
+        if (articlesArray.length > 0) {
+          articlesArray[0].latest = true;
+        }
+
+        setArticles(articlesArray);
+      } else {
+        setArticles([]);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <DataContext.Provider
       value={{
@@ -209,6 +242,7 @@ function DataContextProvider({ children }: { children: ReactNode }) {
         eventLikes,
         postViews,
         eventViews,
+        articles,
       }}
     >
       {children}

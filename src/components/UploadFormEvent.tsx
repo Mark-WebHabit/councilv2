@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import ReactQuill from "react-quill-new";
 import "quill/dist/quill.snow.css";
 import { FaUpload } from "react-icons/fa";
+import { modules, formats } from "../../data/richtext";
 
 interface UploadFormProps {
   onSubmit: (data: any) => void;
@@ -107,38 +108,5 @@ const UploadFormEvent: React.FC<UploadFormProps> = ({ onSubmit }) => {
     </form>
   );
 };
-
-const modules = {
-  toolbar: [
-    [{ font: [] }],
-    [{ header: [1, 2, false] }],
-    ["bold", "italic", "underline", "strike"],
-    [{ color: [] }, { background: [] }],
-    [{ script: "sub" }, { script: "super" }],
-    [{ list: "ordered" }, { list: "bullet" }],
-    [{ indent: "-1" }, { indent: "+1" }],
-    [{ direction: "rtl" }],
-    [{ align: [] }],
-    ["link"],
-    ["clean"],
-  ],
-};
-
-const formats = [
-  "font",
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "color",
-  "background",
-  "script",
-  "list",
-  "bullet",
-  "indent",
-  "direction",
-  "align",
-  "link",
-];
 
 export default UploadFormEvent;
