@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { FaEllipsisV, FaLightbulb, FaTrash } from "react-icons/fa";
+import { DataContext } from "../../context/DataContext";
 
 interface Media {
   media: string | null;
@@ -13,6 +14,8 @@ interface PostProps {
 function Post({ post }: PostProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const { isAdmin } = useContext(DataContext);
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % post.length);
@@ -37,7 +40,7 @@ function Post({ post }: PostProps) {
   };
 
   return (
-    <div className="post flex items-center flex-col w-full p-4 rounded-2xl mx-auto bg-[var(--postbg)] my-8 relative">
+    <div className="post max-w-[800px] flex items-center flex-col w-full p-4 rounded-2xl mx-auto bg-[var(--postbg)] my-8 relative">
       <div className="author flex items-center gap-4 w-full">
         <img
           src="/images/logo.jpg"
@@ -52,31 +55,33 @@ function Post({ post }: PostProps) {
             POSTED ON 2/13/2025
           </small>
         </div>
-        <div className="ml-auto relative">
-          <button onClick={toggleMenu} className="text-white">
-            <FaEllipsisV />
-          </button>
-          {menuOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
-              <button
-                onClick={handleHighlight}
-                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
-              >
-                <FaLightbulb />
-                Highlight
-              </button>
-              <button
-                onClick={handleDelete}
-                className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
-              >
-                <FaTrash />
-                Delete
-              </button>
-            </div>
-          )}
-        </div>
+        {isAdmin && (
+          <div className="ml-auto relative">
+            <button onClick={toggleMenu} className="text-white">
+              <FaEllipsisV />
+            </button>
+            {menuOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                <button
+                  onClick={handleHighlight}
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
+                >
+                  <FaLightbulb color="green" />
+                  Highlight
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
+                >
+                  <FaTrash color="red" />
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
-      <div className="flex flex-col lg:flex-row-reverse gap-1 lg:gap-8">
+      <div className="flex flex-col gap-2 ">
         <div className="w-full bg-white mt-4 p-4 rounded">
           <p className="uppercase text-sm font-semibold">
             Are you ready to create memories and express your feelings? If you
@@ -92,7 +97,7 @@ function Post({ post }: PostProps) {
           </p>
         </div>
         {post[currentIndex]?.media && (
-          <div className="mt-0 lg:mt-4 w-[100%] h-[500px] flex items-center justify-center p-2 lg:p-8">
+          <div className=" w-[100%] h-[500px] flex items-center justify-center px-4 py-0">
             <img
               src="/images/left.png"
               alt=""
@@ -124,7 +129,7 @@ function Post({ post }: PostProps) {
         )}
       </div>
 
-      <div className="w-full flex items-center justify-between px-2 mt-2">
+      <div className="w-full flex items-center justify-between px-2 ">
         {/* count likes */}
         <div className="flex items-center gap-4">
           <div className="w-fit about-button aspect-square rounded-full p-4 grid place-items-center">

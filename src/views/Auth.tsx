@@ -77,7 +77,10 @@ function Auth() {
     setSuccess("");
   }, [isSignup]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement> | React.FormEvent<HTMLButtonElement>
+  ) => {
+    e.preventDefault();
     setError("");
     setSuccess("");
 
@@ -112,13 +115,16 @@ function Auth() {
           password
         );
         await sendEmailVerification(userCredential.user);
-        await signOut(auth);
 
-        // Save user data in Realtime Database
-        await set(ref(db, "users/" + userCredential.user.uid), {
-          email: email,
-          status: "admin",
-        });
+        if (userCredential?.user) {
+          // Save user data in Realtime Database
+          await set(ref(db, "users/" + userCredential.user.uid), {
+            email: email,
+            status: "user",
+          });
+        }
+
+        await signOut(auth);
 
         // Show success modal
         setSuccess("A verification link has been sent to your email.");
@@ -193,7 +199,12 @@ function Auth() {
               </button>
             </div>
 
-            <div className="w-[98%] md:w-[90%] bg-[var(--yellow)] p-4 mx-auto mt-8 rounded-[30px] flex flex-col items-center pt-16 px-8">
+            <form
+              className="w-[98%] md:w-[90%] bg-[var(--yellow)] p-4 mx-auto mt-8 rounded-[30px] flex flex-col items-center pt-16 px-8"
+              onSubmit={(e: React.FormEvent<HTMLFormElement>) =>
+                handleSubmit(e)
+              }
+            >
               {error && <p className="text-red-500">{error}</p>}
               <Input
                 type="email"
@@ -255,12 +266,14 @@ function Auth() {
               <div className="w-full flex justify-end mt-4">
                 <button
                   className="linear-gradient-nav px-6 py-2 text-2xl text-white font-bold rounded-[30px]"
-                  onClick={handleSubmit}
+                  onClick={(e: React.FormEvent<HTMLButtonElement>) =>
+                    handleSubmit(e)
+                  }
                 >
                   SUBMIT
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
         <div className="flex-1 h-full" data-aos="fade-left">

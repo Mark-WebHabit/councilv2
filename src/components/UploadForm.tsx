@@ -18,15 +18,32 @@ const UploadForm: React.FC<UploadFormProps> = ({ onSubmit }) => {
   };
 
   const handleFormSubmit = (data: any) => {
-    const file = data.media[0];
+    const files = data.media;
+    const allowedTypes = ["image/jpeg", "image/png", "video/mp4"];
+    const validFiles: File[] = [];
 
-    if (file && file.size > 3 * 1024 * 1024) {
-      setFileError("File size exceeds 3MB");
-      return;
+    for (const file of files) {
+      if (file.size > 3 * 1024 * 1024) {
+        setFileError("File size exceeds 3MB");
+        return;
+      }
+
+      if (!allowedTypes.includes(file.type)) {
+        setFileError("Invalid file type. Only images and videos are allowed.");
+        return;
+      }
+
+      validFiles.push(file);
     }
 
-    console.log({ ...data, content: editorContent });
-    onSubmit({ ...data, content: editorContent });
+    const formData = {
+      ...data,
+      content: editorContent,
+      media: validFiles,
+    };
+
+    console.log(formData);
+    onSubmit(formData);
     reset();
     setEditorContent("");
     setFileError(null);
@@ -51,11 +68,12 @@ const UploadForm: React.FC<UploadFormProps> = ({ onSubmit }) => {
       </div>
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-bold mb-2">
-          Media (optional, max 3MB)
+          Media (optional, max 3MB each)
         </label>
         <input
           type="file"
           {...register("media")}
+          multiple
           className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
         />
         {fileError && <p className="text-red-500 text-xs mt-1">{fileError}</p>}
@@ -82,7 +100,7 @@ const modules = {
     [{ indent: "-1" }, { indent: "+1" }],
     [{ direction: "rtl" }],
     [{ align: [] }],
-    ["link", "image", "video"],
+    ["link"],
     ["clean"],
   ],
 };
@@ -103,8 +121,6 @@ const formats = [
   "direction",
   "align",
   "link",
-  "image",
-  "video",
 ];
 
 export default UploadForm;

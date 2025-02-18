@@ -8,6 +8,7 @@ import Council from "./views/Council";
 import Auth from "./views/Auth";
 import Posts from "./views/Posts";
 import Events from "./views/Events";
+import Articles from "./views/Articles";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/auth" element={<Auth />} />
           <Route path="/posts" element={<Posts />} />
           <Route path="/events" element={<Events />} />
+          <Route path="/articles" element={<Articles />} />
         </Routes>
       </Router>
     </DataContextProvider>

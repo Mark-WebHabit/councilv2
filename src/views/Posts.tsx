@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import NavBar from "../components/NavBar";
 import Post from "../components/Post";
 import UploadForm from "../components/UploadForm";
+import { DataContext } from "../../context/DataContext";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const initialPosts: { media: string | null; type: string | null }[][] = [
   [
@@ -35,35 +38,60 @@ const initialPosts: { media: string | null; type: string | null }[][] = [
 function Posts() {
   const [posts, setPosts] = useState(initialPosts);
   const [showForm, setShowForm] = useState(false);
+  const { isAdmin } = useContext(DataContext);
+
+  useEffect(() => {
+    AOS.init({
+      offset: 200,
+      duration: 200,
+      easing: "ease-in-sine",
+      delay: 50,
+    });
+  }, []);
 
   const handleUploadClick = () => {
     setShowForm(!showForm);
   };
 
   const handleFormSubmit = (data: any) => {
-    const newPost = [
-      {
-        media: data.media[0] ? URL.createObjectURL(data.media[0]) : null,
-        type: data.media[0] ? data.media[0].type.split("/")[0] : null,
-      },
-    ];
-    setPosts([...posts, newPost]);
+    const newPost = data.media
+      .map((file: File) => {
+        if (file) {
+          return {
+            media: URL.createObjectURL(file),
+            type: file.type.split("/")[0],
+          };
+        }
+        return null;
+      })
+      .filter(
+        (event: { media: string | null; type: string | null } | null) =>
+          event !== null
+      );
+
+    setPosts([...posts, ...newPost]);
   };
 
   return (
-    <div className="max">
+    <div className="max  mx-auto">
       <NavBar />
-      <div className="w-screen pt-[80px] screen overflow-scroll no-scrollbar">
+      <div className=" pt-[80px] screen overflow-scroll no-scrollbar">
         <div className="w-full max-w-[1000px] h-full mx-auto border-x-2 border-white/10 pt-2 bg-[var(--fadebg)] flex flex-col">
-          <button
-            onClick={handleUploadClick}
-            className="px-8 rounded-2xl mx-auto bg-[var(--bg)] py-2 text-xl flex items-center gap-4 text-white font-bold"
-          >
-            <img src="/images/add.png" alt="ADD" />
-            UPLOAD
-          </button>
+          {isAdmin && (
+            <>
+              <button
+                onClick={handleUploadClick}
+                className="px-8 rounded-2xl mx-auto bg-[var(--bg)] py-2 text-xl flex items-center gap-4 text-white font-bold"
+              >
+                <img src="/images/add.png" alt="ADD" />
+                UPLOAD
+              </button>
+
+              <hr className="border-b-2 mt-2 border-white/30" />
+            </>
+          )}
           {showForm && (
-            <div className="my-4 mx-10">
+            <div className="my-4 mx-10" data-aos="zoom-in">
               <UploadForm onSubmit={handleFormSubmit} />
             </div>
           )}

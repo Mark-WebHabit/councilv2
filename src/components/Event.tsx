@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { FaEllipsisV, FaLightbulb, FaTrash } from "react-icons/fa";
+import { DataContext } from "../../context/DataContext";
 
 interface Media {
   media: string | null;
@@ -13,6 +14,8 @@ interface EventProps {
 function Event({ event }: EventProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const { isAdmin } = useContext(DataContext);
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % event.length);
@@ -39,7 +42,10 @@ function Event({ event }: EventProps) {
   };
 
   return (
-    <div className="event flex items-center flex-col w-full p-4 rounded-2xl mx-auto bg-[var(--postbg)] my-8 relative">
+    <div className="event flex items-center max-w-[800px]  flex-col w-full p-4 rounded-2xl mx-auto bg-[var(--postbg)] my-8 relative">
+      <p className="text-md font-bold mb-2 text-white uppercase  w-full text-left">
+        EVENT DATE: 02/25/2025
+      </p>
       <div className="author flex items-center gap-4 w-full">
         <img
           src="/images/logo.jpg"
@@ -53,11 +59,15 @@ function Event({ event }: EventProps) {
           <small className="text-sm text-white uppercase">
             POSTED ON 2/13/2025
           </small>
+          <br />
         </div>
+
         <div className="ml-auto relative">
-          <button onClick={toggleMenu} className="text-white">
-            <FaEllipsisV />
-          </button>
+          {isAdmin && (
+            <button onClick={toggleMenu} className="text-white">
+              <FaEllipsisV />
+            </button>
+          )}
           {menuOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
               <button
@@ -78,7 +88,7 @@ function Event({ event }: EventProps) {
           )}
         </div>
       </div>
-      <div className="flex flex-col lg:flex-row-reverse gap-1 lg:gap-8">
+      <div className="flex flex-col  gap-1 lg:gap-2">
         <div className="w-full bg-white mt-4 p-4 rounded">
           <p className="uppercase text-sm font-semibold">
             Are you ready to create memories and express your feelings? If you
@@ -94,7 +104,7 @@ function Event({ event }: EventProps) {
           </p>
         </div>
         {event[currentIndex]?.media && (
-          <div className="mt-0 lg:mt-4 w-[100%] h-[500px] flex items-center justify-center p-2 lg:p-8">
+          <div className="mt-0  w-[100%] h-[500px] flex items-center justify-center px-4 py-0">
             <img
               src="/images/left.png"
               alt=""
@@ -125,7 +135,6 @@ function Event({ event }: EventProps) {
           </div>
         )}
       </div>
-
       <div className="w-full flex items-center justify-between px-2 mt-2">
         {/* count likes */}
         <div className="flex items-center gap-4">

@@ -104,7 +104,7 @@ function Home() {
           {!auth?.currentUser && (
             <div className="flex items-center justify-between w-full max-w-[800px] mt-20">
               <button
-                className="flex-1 mx-4 py-4 text-xl md:text-2xl lg:text-4xl poppins-bold text-white rounded-full linear-gradient-nav  cursor-pointer "
+                className="flex-1   mx-4 py-4  text-xl md:text-2xl lg:text-4xl poppins-bold text-white  cursor-pointer rounded-full about-button"
                 onClick={() => navigate("/auth?page=register")}
               >
                 SIGN UP
@@ -205,7 +205,7 @@ function Home() {
             EMAIL
           </p>
           <p className="text-2xl lg:text-3xl text-white poppins-medium my-4 w-full break-words">
-            hello@reallygreatsite.com
+            shssc.main1@g.batstate-u.edu.ph
           </p>
         </div>
         <div className="mt-16">

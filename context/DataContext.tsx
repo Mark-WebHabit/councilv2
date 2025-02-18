@@ -8,6 +8,7 @@ export const DataContext = createContext<any | null>(null);
 function DataContextProvider({ children }: { children: ReactNode }) {
   const [authUser, setAuthUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<Object | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -17,6 +18,7 @@ function DataContextProvider({ children }: { children: ReactNode }) {
         const userRef = ref(db, "users/" + user.uid);
         const snapshot = await get(userRef);
         if (snapshot.exists()) {
+          setIsAdmin(snapshot.val()?.status !== "user");
           setUserData(snapshot.val());
         } else {
           setUserData(null);
@@ -31,7 +33,7 @@ function DataContextProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <DataContext.Provider value={{ authUser, userData }}>
+    <DataContext.Provider value={{ authUser, userData, isAdmin }}>
       {children}
     </DataContext.Provider>
   );
