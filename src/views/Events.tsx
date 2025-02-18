@@ -21,6 +21,7 @@ function Events() {
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const { events, isAdmin } = useContext(DataContext);
 
@@ -49,6 +50,7 @@ function Events() {
 
   const handleFormSubmit = async (data: any) => {
     try {
+      setLoading(true);
       if (!data?.content) {
         setError("No content to post");
         return;
@@ -101,6 +103,8 @@ function Events() {
       setShowForm(false);
     } catch (error: any) {
       setError(error?.message || "An unexpected error occurred.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -136,7 +140,7 @@ function Events() {
           )}{" "}
           {showForm && (
             <div className="my-4 mx-10" data-aos="zoom-in">
-              <UploadFormEvent onSubmit={handleFormSubmit} />
+              <UploadFormEvent onSubmit={handleFormSubmit} loading={loading} />
             </div>
           )}
           {showCalendar && (

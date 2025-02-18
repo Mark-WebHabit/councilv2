@@ -16,6 +16,7 @@ function Posts() {
   const { posts } = useContext(DataContext);
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const { isAdmin } = useContext(DataContext);
 
   useEffect(() => {
@@ -33,6 +34,7 @@ function Posts() {
 
   const handleFormSubmit = async (data: any) => {
     try {
+      setLoading(true);
       if (!data?.content) {
         setError("No content to post");
         return;
@@ -79,6 +81,8 @@ function Posts() {
       setShowForm(false);
     } catch (error: any) {
       setError(error?.message || "An unexpected error occurred.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,7 +109,7 @@ function Posts() {
           )}
           {showForm && (
             <div className="my-4 mx-10" data-aos="zoom-in">
-              <UploadForm onSubmit={handleFormSubmit} />
+              <UploadForm onSubmit={handleFormSubmit} loading={loading} />
             </div>
           )}
           <div className="flex-1 overflow-scroll no-scrollbar mt-4 pb-[100px] px-2">

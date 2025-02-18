@@ -186,7 +186,7 @@ function Event({ event, setError }: EventProps) {
             dangerouslySetInnerHTML={{ __html: event.content }}
           />
         </div>
-        {event?.media[currentIndex] && (
+        {event?.media?.length > 0 && event?.media[currentIndex] && (
           <div className="mt-0  w-[100%] h-[500px] flex items-center justify-center px-4 py-0">
             {event?.media?.length > 1 && (
               <img

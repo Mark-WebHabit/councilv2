@@ -7,9 +7,10 @@ import { modules, formats } from "../../data/richtext";
 
 interface UploadFormProps {
   onSubmit: (data: any) => void;
+  loading: boolean;
 }
 
-const UploadFormEvent: React.FC<UploadFormProps> = ({ onSubmit }) => {
+const UploadFormEvent: React.FC<UploadFormProps> = ({ onSubmit, loading }) => {
   const { register, handleSubmit, reset } = useForm();
   const [editorContent, setEditorContent] = useState("");
   const [fileError, setFileError] = useState<string | null>(null);
@@ -102,8 +103,14 @@ const UploadFormEvent: React.FC<UploadFormProps> = ({ onSubmit }) => {
         type="submit"
         className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
       >
-        <FaUpload />
-        Submit
+        {!loading ? (
+          <>
+            <FaUpload />
+            Submit
+          </>
+        ) : (
+          "Loading..."
+        )}
       </button>
     </form>
   );

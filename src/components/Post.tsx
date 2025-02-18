@@ -185,7 +185,7 @@ function Post({ post, setError }: PostProps) {
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
         </div>
-        {post?.media[currentIndex] && (
+        {post?.media?.length > 0 && post?.media[currentIndex] && (
           <div className=" w-[100%] h-[500px] flex items-center justify-center px-4 py-0">
             {post?.media?.length > 1 && (
               <img
