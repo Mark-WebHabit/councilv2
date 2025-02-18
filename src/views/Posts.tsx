@@ -112,9 +112,11 @@ function Posts() {
             {posts.map((post: TypePost, index: number) => (
               <Post key={index} post={post} setError={setError} />
             ))}
-            <h1 className="text-center text-4xl text-white mt-8">
-              No Post Yet
-            </h1>
+            {posts?.length <= 0 && (
+              <h1 className="text-center text-4xl text-white mt-8">
+                No Posts Yet
+              </h1>
+            )}
           </div>
         </div>
       </div>

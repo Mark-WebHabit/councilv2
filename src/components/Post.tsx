@@ -7,6 +7,7 @@ import { ref, update, remove, set, get } from "firebase/database";
 import { auth, db } from "../../firebase";
 import { Like } from "../../data/Like";
 import useIntersectionObserver from "../../hooks/useIntersectionOberver";
+import { formatDateString } from "../../utilities/date";
 
 export type PostProps = {
   post: TypePost;
@@ -14,8 +15,6 @@ export type PostProps = {
 };
 
 function Post({ post, setError }: PostProps) {
-  console.log(post);
-
   const postRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -150,7 +149,7 @@ function Post({ post, setError }: PostProps) {
             Integrated School - Senior High School Student Council
           </p>
           <small className="text-sm text-white uppercase">
-            POSTED ON 2/13/2025
+            POSTED ON {formatDateString(post.datePosted)}
           </small>
         </div>
         {isAdmin && (
@@ -179,7 +178,7 @@ function Post({ post, setError }: PostProps) {
           </div>
         )}
       </div>
-      <div className="flex flex-col gap-2 ">
+      <div className="flex w-full flex-col gap-2 ">
         <div className="w-full bg-white mt-4 p-4 rounded">
           <div
             className="uppercase text-sm font-semibold w-full"

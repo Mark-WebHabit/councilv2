@@ -8,10 +8,12 @@ interface UploadFormProps {
   onSubmit: (data: any) => void;
 }
 
-const UploadForm: React.FC<UploadFormProps> = ({ onSubmit }) => {
+const UploadFormEvent: React.FC<UploadFormProps> = ({ onSubmit }) => {
   const { register, handleSubmit, reset } = useForm();
   const [editorContent, setEditorContent] = useState("");
   const [fileError, setFileError] = useState<string | null>(null);
+  const [eventDate, setEventDate] = useState("");
+  const today = new Date().toISOString().split("T")[0];
 
   const handleEditorChange = (content: string) => {
     setEditorContent(content);
@@ -40,9 +42,9 @@ const UploadForm: React.FC<UploadFormProps> = ({ onSubmit }) => {
       ...data,
       content: editorContent,
       media: validFiles,
+      eventDate,
     };
 
-    console.log(formData);
     onSubmit(formData);
     reset();
     setEditorContent("");
@@ -78,6 +80,23 @@ const UploadForm: React.FC<UploadFormProps> = ({ onSubmit }) => {
         />
         {fileError && <p className="text-red-500 text-xs mt-1">{fileError}</p>}
       </div>
+
+      <div className="my-3">
+        <label
+          htmlFor="eventDate"
+          className="block text-gray-700 text-sm font-bold mb-2"
+        >
+          Event Date
+        </label>
+        <input
+          type="date"
+          id="eventDate"
+          value={eventDate}
+          onChange={(e) => setEventDate(e.target.value)}
+          className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none p-2"
+          min={today}
+        />
+      </div>
       <button
         type="submit"
         className="bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
@@ -107,7 +126,6 @@ const modules = {
 
 const formats = [
   "font",
-  "header",
   "bold",
   "italic",
   "underline",
@@ -123,4 +141,4 @@ const formats = [
   "link",
 ];
 
-export default UploadForm;
+export default UploadFormEvent;

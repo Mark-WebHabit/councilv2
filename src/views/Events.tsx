@@ -1,50 +1,28 @@
 import { useState, useContext, useEffect } from "react";
 import NavBar from "../components/NavBar";
 import Event from "../components/Event";
-import UploadForm from "../components/UploadForm";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaCalendarAlt, FaTimes } from "react-icons/fa";
 import { DataContext } from "../../context/DataContext";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import UploadFormEvent from "../components/UploadFormEvent";
+import { storage } from "../../firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref as dbRef, set } from "firebase/database";
+import { db } from "../../firebase";
+import Modal from "../components/Modal";
 
-const initialEvents: { media: string | null; type: string | null }[][] = [
-  [
-    {
-      media: "test.mp4",
-      type: "video",
-    },
-    {
-      media: "selfie.jpg",
-      type: "image",
-    },
-  ],
-  [
-    {
-      media: "selfie.jpg",
-      type: "image",
-    },
-    {
-      media: "test.mp4",
-      type: "video",
-    },
-  ],
-  [
-    {
-      media: null,
-      type: null,
-    },
-  ],
-];
+import { Event as TypeEvent } from "../../data/Event";
 
 function Events() {
-  const [events, setEvents] = useState(initialEvents);
   const [showForm, setShowForm] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [error, setError] = useState("");
 
-  const { isAdmin } = useContext(DataContext);
+  const { events, isAdmin } = useContext(DataContext);
 
   useEffect(() => {
     AOS.init({
@@ -69,27 +47,69 @@ function Events() {
     }
   };
 
-  const handleFormSubmit = (data: any) => {
-    const newEvents = data.media
-      .map((file: File) => {
-        if (file) {
-          return {
-            media: URL.createObjectURL(file),
-            type: file.type.split("/")[0],
-          };
-        }
-        return null;
-      })
-      .filter(
-        (event: { media: string | null; type: string | null } | null) =>
-          event !== null
-      );
+  const handleFormSubmit = async (data: any) => {
+    try {
+      if (!data?.content) {
+        setError("No content to post");
+        return;
+      }
 
-    setEvents([...events, ...newEvents]);
+      if (!data?.eventDate) {
+        setError("Specify Event Date");
+        return;
+      }
+
+      const urls = [];
+      if (data?.media || data.media.length > 0) {
+        for (const file of data.media) {
+          if (!(file instanceof File)) {
+            setError("Invalid file type.");
+            return;
+          }
+
+          const storageRef = ref(storage, `issco/${file.name}`);
+          const snapshot = await uploadBytes(storageRef, file);
+          const downloadURL = await getDownloadURL(snapshot.ref);
+
+          // Determine the media type
+          const fileType = file?.name?.split(".")?.pop()?.toLowerCase();
+
+          if (!fileType) {
+            setError("Unable to determine the file");
+            return;
+          }
+
+          const mediaType = ["jpg", "jpeg", "png", "gif"].includes(fileType)
+            ? "image"
+            : "video";
+
+          urls.push({ url: downloadURL, type: mediaType });
+        }
+      }
+
+      const newEvents = {
+        content: data.content,
+        media: urls,
+        datePosted: new Date().toISOString(),
+        isHighlight: false,
+        eventDate: data.eventDate,
+      };
+
+      // Save to Realtime Database
+      const eventsRef = dbRef(db, "events/" + Date.now());
+      await set(eventsRef, newEvents);
+      setShowForm(false);
+    } catch (error: any) {
+      setError(error?.message || "An unexpected error occurred.");
+    }
   };
+
   return (
     <div className="max">
       <NavBar />
+      {error && (
+        <Modal type="error" text={error} onClose={() => setError("")} />
+      )}
       <div className="w-screen pt-[80px] screen overflow-scroll no-scrollbar">
         <div className="w-full max-w-[1000px] h-full mx-auto border-x-2 border-white/10 pt-2 bg-[var(--fadebg)] flex flex-col">
           {isAdmin && (
@@ -116,7 +136,7 @@ function Events() {
           )}{" "}
           {showForm && (
             <div className="my-4 mx-10" data-aos="zoom-in">
-              <UploadForm onSubmit={handleFormSubmit} />
+              <UploadFormEvent onSubmit={handleFormSubmit} />
             </div>
           )}
           {showCalendar && (
@@ -141,12 +161,14 @@ function Events() {
             </div>
           )}
           <div className="flex-1 overflow-scroll no-scrollbar mt-4 pb-[100px] px-2">
-            {events.map((event, index) => (
-              <Event key={index} event={event} />
+            {events.map((event: TypeEvent, index: number) => (
+              <Event key={index} event={event} setError={setError} />
             ))}
-            <h1 className="text-center text-4xl text-white mt-8">
-              No Post Yet
-            </h1>
+            {events?.length <= 0 && (
+              <h1 className="text-center text-4xl text-white mt-8">
+                No Events Yet
+              </h1>
+            )}
           </div>
         </div>
       </div>
