@@ -23,8 +23,8 @@ const UploadForm: React.FC<UploadFormProps> = ({ onSubmit }) => {
     const validFiles: File[] = [];
 
     for (const file of files) {
-      if (file.size > 3 * 1024 * 1024) {
-        setFileError("File size exceeds 3MB");
+      if (file.size > 20 * 1024 * 1024) {
+        setFileError("File size exceeds 20MB");
         return;
       }
 
