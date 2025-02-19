@@ -32,7 +32,7 @@ function NavBar() {
         <Button text="POSTS" path="/posts" />
         <Button text="EVENTS" path="/events" />
         <Button text="ARTICLES" path="/articles" />
-        <Button text="COFESSIONS" path="/" />
+        <Button text="COFESSIONS" path="/confessions" />
         <Button text="SUGGEST US" path="/" />
         {auth?.currentUser && (
           <button

@@ -1,8 +1,9 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { auth } from "../firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
-import { get, ref, getDatabase, onValue } from "firebase/database";
+import { get, ref, getDatabase, onValue, off } from "firebase/database";
 import { db } from "../firebase";
+import { maskId } from "../utilities/maskId";
 
 export const DataContext = createContext<any | null>(null);
 
@@ -10,6 +11,7 @@ import { Post } from "../data/Post";
 import { Event } from "../data/Event";
 import { Like } from "../data/Like";
 import { Article } from "../data/Article";
+import { Confession, Comment, Reply } from "../data/Confession";
 interface View {
   id: string;
   users: string[];
@@ -28,6 +30,8 @@ function DataContextProvider({ children }: { children: ReactNode }) {
   const [articles, setArticles] = useState<Article[]>([]);
   const [highlights, setHighlights] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
+  const [confessions, setConfessions] = useState<Confession[]>([]);
+
   useEffect(() => {
     const usersRef = ref(db, "users");
 
@@ -49,8 +53,6 @@ function DataContextProvider({ children }: { children: ReactNode }) {
 
         // Convert the Map back to an array
         const uniqueUsers = Array.from(uniqueUsersMap.values());
-
-        console.log(uniqueUsers);
 
         setUsers(uniqueUsers);
       } else {
@@ -280,6 +282,85 @@ function DataContextProvider({ children }: { children: ReactNode }) {
     setHighlights(highlightsArray);
   }, [posts, events, articles]);
 
+  useEffect(() => {
+    const confessionsRef = ref(db, "confessions");
+    const commentsRef = ref(db, "comments");
+    const repliesRef = ref(db, "replies");
+
+    const fetchData = () => {
+      try {
+        onValue(confessionsRef, (confessionsSnapshot) => {
+          const confessionsData = confessionsSnapshot.exists()
+            ? confessionsSnapshot.val()
+            : {};
+
+          onValue(commentsRef, (commentsSnapshot) => {
+            const commentsData = commentsSnapshot.exists()
+              ? commentsSnapshot.val()
+              : {};
+
+            onValue(repliesRef, (repliesSnapshot) => {
+              const repliesData = repliesSnapshot.exists()
+                ? repliesSnapshot.val()
+                : {};
+
+              // Function to recursively map replies
+              const mapReplies = (parentId: string): Reply[] => {
+                return Object.values(repliesData)
+                  .filter((reply: any) => reply.commentId === parentId)
+                  .map((reply: any) => ({
+                    id: reply.id,
+                    author: maskId(reply.author),
+                    content: reply.content,
+                    replies: mapReplies(reply.id), // Recursively fetch nested replies
+                  }));
+              };
+
+              // Function to map comments and attach replies
+              const mapComments = (confessionId: string): Comment[] => {
+                return Object.values(commentsData)
+                  .filter(
+                    (comment: any) => comment.confessionId === confessionId
+                  )
+                  .map((comment: any) => ({
+                    id: comment.id,
+                    author: maskId(comment.author),
+                    content: comment.content,
+                    replies: mapReplies(comment.id), // Attach nested replies
+                  }));
+              };
+
+              // Restructure confessions with nested comments and replies
+              const structuredConfessions: Confession[] = Object.keys(
+                confessionsData
+              ).map((key) => ({
+                id: key,
+                author: maskId(confessionsData[key].author),
+                datePosted: confessionsData[key].datePosted,
+                content: confessionsData[key].content,
+                comments: mapComments(key), // Attach comments with replies
+              }));
+
+              console.log(structuredConfessions);
+              setConfessions(structuredConfessions);
+            });
+          });
+        });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      // Clean up the listeners when the component unmounts
+      off(confessionsRef);
+      off(commentsRef);
+      off(repliesRef);
+    };
+  }, []);
+
   return (
     <DataContext.Provider
       value={{
@@ -295,6 +376,7 @@ function DataContextProvider({ children }: { children: ReactNode }) {
         articles,
         highlights,
         users,
+        confessions,
       }}
     >
       {children}
