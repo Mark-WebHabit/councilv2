@@ -7,16 +7,24 @@ import { data } from "../../data/councils";
 import { auth } from "../../firebase";
 import { DataContext } from "../../context/DataContext";
 
-const Highlight = ({ text }: { text: string }) => {
+const Highlight = ({ data }: { data: any }) => {
+  // Determine the image URL to use
+  const imageUrl =
+    data.media?.find((media: any) => media.type.startsWith("image"))?.url ||
+    data.assets?.find((asset: any) => asset.type.startsWith("image"))?.url ||
+    "/images/headline.jpg";
+
   return (
     <div className="mt-8 flex flex-wrap " data-aos="zoom-in">
       <div className="group">
         <img
-          src="/images/headline.jpg"
+          src={imageUrl}
           alt="Highlight"
-          className=" max-w-[468px] min-w-[250px] w-full rounded-4xl border-2 border-transparent transition-all duration-200 group-hover:border-[var(--pink)] aspect-[156/109]"
+          className="max-w-[468px] min-w-[250px] w-full rounded-4xl border-2 border-transparent transition-all duration-200 group-hover:border-[var(--pink)] aspect-[156/109]"
         />
-        <p className="text-2xl text-white font-medium my-4">{text}</p>
+        <p className="text-2xl text-white font-medium my-4 uppercase">
+          {data?.type}
+        </p>
         <p className="text-4xl text-[var(--pink)] poppins-medium my-4">
           HEADLINE
         </p>
@@ -60,6 +68,7 @@ function Home() {
   const aboutUsRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { authUser } = useContext(DataContext);
+  const { highlights } = useContext(DataContext);
 
   useEffect(() => {
     AOS.init({
@@ -121,19 +130,21 @@ function Home() {
         </div>
       </div>
 
-      <div className="highlights h-auto pb-16 bg-[var(--bg)] px-4 lg:px-24 ">
-        <h1
-          className="text-4xl md:text-5xl lg:text-8xl bodoni font-extrabold text-white shadow-text mb-16 trend  "
-          data-aos="fade-right"
-        >
-          HIGHLIGHTS
-        </h1>
-        <div className="flex gap-8 items-center justify-between overflow-x-scroll flex-nowrap w-full no-scrollbar">
-          <Highlight text="POST" />
-          <Highlight text="EVENTS" />
-          <Highlight text="ARTICLES" />
+      {highlights?.length > 0 && (
+        <div className="highlights h-auto pb-16 bg-[var(--bg)] px-4 lg:px-24 ">
+          <h1
+            className="text-4xl md:text-5xl lg:text-8xl bodoni font-extrabold text-white shadow-text mb-16 trend  "
+            data-aos="fade-right"
+          >
+            HIGHLIGHTS
+          </h1>
+          <div className="flex gap-8 items-center justify-between overflow-x-scroll flex-nowrap w-full no-scrollbar">
+            {highlights.map((hl: any, i: number) => (
+              <Highlight key={i} data={hl} />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
       <div className="council h-auto pb-16 bg-[var(--bg)] px-4 lg:px-24  pt-20 ">
         <h1 className="text-4xl trend md:text-6xl lg:text-8xl bodoni font-extrabold text-white shadow-text mb-16">
           YOUR COUNCIL

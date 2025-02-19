@@ -26,6 +26,7 @@ function DataContextProvider({ children }: { children: ReactNode }) {
   const [postViews, setPostViews] = useState<View[]>([]);
   const [eventViews, setEventViews] = useState<View[]>([]);
   const [articles, setArticles] = useState<Article[]>([]);
+  const [highlights, setHighlights] = useState<any[]>([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -230,6 +231,24 @@ function DataContextProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const highlightsArray = [
+      ...posts
+        .filter((post) => post.isHighlight)
+        .map((post) => ({ ...post, type: "post" })),
+      ...events
+        .filter((event) => event.isHighlight)
+        .map((event) => ({ ...event, type: "event" })),
+      ...articles
+        .filter((article) => article.isHighlight)
+        .map((article) => ({ ...article, type: "article" })),
+    ];
+
+    setHighlights(highlightsArray);
+
+    console.log(highlightsArray);
+  }, [posts, events, articles]);
+
   return (
     <DataContext.Provider
       value={{
@@ -243,6 +262,7 @@ function DataContextProvider({ children }: { children: ReactNode }) {
         postViews,
         eventViews,
         articles,
+        highlights,
       }}
     >
       {children}
