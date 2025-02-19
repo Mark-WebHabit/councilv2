@@ -1,3 +1,5 @@
+import emailjs from "emailjs-com";
+
 import { useState, useContext, useEffect } from "react";
 import NavBar from "../components/NavBar";
 import Event from "../components/Event";
@@ -13,9 +15,10 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { ref as dbRef, set } from "firebase/database";
 import { db } from "../../firebase";
 import Modal from "../components/Modal";
+import { config } from "../../utilities/emailjs";
 
 import { Event as TypeEvent } from "../../data/Event";
-
+import { BASE_URL } from "../../utilities/BASE_URL";
 function Events() {
   const [showForm, setShowForm] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -24,7 +27,7 @@ function Events() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { events, isAdmin } = useContext(DataContext);
+  const { events, isAdmin, users } = useContext(DataContext);
 
   useEffect(() => {
     AOS.init({
@@ -117,6 +120,25 @@ function Events() {
       const eventsRef = dbRef(db, "events/" + Date.now());
       await set(eventsRef, newEvents);
       setShowForm(false);
+
+      if (users?.length > 0) {
+        for (const usr of users.filter((usr: any) => usr?.email)) {
+          const templateParams = {
+            from_name: "ISSCOHUB",
+            message: "A new event has been uploaded!.",
+            to_email: usr.email,
+            link: `${BASE_URL}/events`,
+          };
+
+          await emailjs.send(
+            config[0],
+            config[1],
+
+            templateParams,
+            config[2]
+          );
+        }
+      }
     } catch (error: any) {
       setError(error?.message || "An unexpected error occurred.");
     } finally {

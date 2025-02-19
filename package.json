@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -13,8 +13,12 @@
     "@tailwindcss/vite": "^4.0.6",
     "aos": "^2.3.4",
     "axios": "^1.7.9",
+    "emailjs-com": "^3.2.0",
     "firebase": "^11.3.1",
+    "firebase-admin": "^13.1.0",
+    "firebase-functions": "^6.3.2",
     "html-truncate": "^1.2.2",
+    "nodemailer": "^6.10.0",
     "react": "^19.0.0",
     "react-datepicker": "^8.0.0",
     "react-dom": "^19.0.0",
@@ -22,6 +26,7 @@
     "react-icons": "^5.4.0",
     "react-quill-new": "^3.3.3",
     "react-router-dom": "^7.1.5",
+    "resend": "^4.1.2",
     "tailwindcss": "^4.0.6",
     "vite-plugin-node-polyfills": "^0.23.0"
   },
@@ -29,6 +34,8 @@
     "@eslint/js": "^9.19.0",
     "@types/aos": "^3.0.7",
     "@types/html-truncate": "^1.2.4",
+    "@types/node": "^22.13.4",
+    "@types/nodemailer": "^6.4.17",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",

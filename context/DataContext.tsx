@@ -27,6 +27,39 @@ function DataContextProvider({ children }: { children: ReactNode }) {
   const [eventViews, setEventViews] = useState<View[]>([]);
   const [articles, setArticles] = useState<Article[]>([]);
   const [highlights, setHighlights] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
+  useEffect(() => {
+    const usersRef = ref(db, "users");
+
+    const unsubscribe = onValue(usersRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const usersArray = Object.keys(data).map((key) => ({
+          id: key,
+          ...data[key],
+        }));
+
+        // Use a Map to store unique users by email
+        const uniqueUsersMap = new Map();
+        usersArray.forEach((user) => {
+          if (!uniqueUsersMap.has(user.email)) {
+            uniqueUsersMap.set(user.email, user);
+          }
+        });
+
+        // Convert the Map back to an array
+        const uniqueUsers = Array.from(uniqueUsersMap.values());
+
+        console.log(uniqueUsers);
+
+        setUsers(uniqueUsers);
+      } else {
+        setUsers([]);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -245,8 +278,6 @@ function DataContextProvider({ children }: { children: ReactNode }) {
     ];
 
     setHighlights(highlightsArray);
-
-    console.log(highlightsArray);
   }, [posts, events, articles]);
 
   return (
@@ -263,6 +294,7 @@ function DataContextProvider({ children }: { children: ReactNode }) {
         eventViews,
         articles,
         highlights,
+        users,
       }}
     >
       {children}

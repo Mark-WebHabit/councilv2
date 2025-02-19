@@ -1,3 +1,4 @@
+import emailjs from "emailjs-com";
 import { useContext, useState, useEffect } from "react";
 import NavBar from "../components/NavBar";
 import Post from "../components/Post";
@@ -7,17 +8,19 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import Modal from "../components/Modal";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage, db } from "../../firebase"; // Import database
-import { ref as dbRef, set } from "firebase/database"; // Import database functions
-
+import { storage, db } from "../../firebase";
+import { ref as dbRef, set } from "firebase/database";
 import { Post as TypePost } from "../../data/Post";
+
+import { config } from "../../utilities/emailjs";
+import { BASE_URL } from "../../utilities/BASE_URL";
 
 function Posts() {
   const { posts } = useContext(DataContext);
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { isAdmin } = useContext(DataContext);
+  const { isAdmin, users } = useContext(DataContext);
 
   useEffect(() => {
     AOS.init({
@@ -52,9 +55,7 @@ function Posts() {
           const snapshot = await uploadBytes(storageRef, file);
           const downloadURL = await getDownloadURL(snapshot.ref);
 
-          // Determine the media type
           const fileType = file?.name?.split(".")?.pop()?.toLowerCase();
-
           if (!fileType) {
             setError("Unable to determine the file");
             return;
@@ -75,10 +76,28 @@ function Posts() {
         isHighlight: false,
       };
 
-      // Save to Realtime Database
       const postRef = dbRef(db, "posts/" + Date.now());
       await set(postRef, newPost);
       setShowForm(false);
+
+      if (users?.length > 0) {
+        for (const usr of users.filter((usr: any) => usr?.email)) {
+          const templateParams = {
+            from_name: "ISSCOHUB",
+            message: "A new post has been uploaded!.",
+            to_email: usr.email,
+            link: `${BASE_URL}/posts`,
+          };
+
+          await emailjs.send(
+            config[0],
+            config[1],
+
+            templateParams,
+            config[2]
+          );
+        }
+      }
     } catch (error: any) {
       setError(error?.message || "An unexpected error occurred.");
     } finally {

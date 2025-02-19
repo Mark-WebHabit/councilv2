@@ -1,0 +1,4 @@
+install nodejs
+install firebase-tools globally
+firebase login 
+change url in functions/src/index.ts

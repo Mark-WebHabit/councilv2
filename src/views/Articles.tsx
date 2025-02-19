@@ -1,3 +1,4 @@
+import emailjs from "emailjs-com";
 import { useContext, useState, ChangeEvent, FormEvent, useEffect } from "react";
 import NavBar from "../components/NavBar";
 import RecentArticle from "../components/RecentArticle";
@@ -20,6 +21,8 @@ import {
 } from "firebase/storage";
 import { ref as dbRef, push, ref, remove, update } from "firebase/database";
 import { formatDateString } from "../../utilities/date";
+import { config } from "../../utilities/emailjs";
+import { BASE_URL } from "../../utilities/BASE_URL";
 
 function Articles() {
   const { isAdmin } = useContext(DataContext);
@@ -39,7 +42,7 @@ function Articles() {
   const [active, setActive] = useState<Article | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const { articles } = useContext(DataContext);
+  const { articles, users } = useContext(DataContext);
 
   useEffect(() => {
     setCurrentIndex(0);
@@ -165,6 +168,25 @@ function Articles() {
         isHighlight: false,
       });
       setFileAssets([]);
+
+      if (users?.length > 0) {
+        for (const usr of users.filter((usr: any) => usr?.email)) {
+          const templateParams = {
+            from_name: "ISSCOHUB",
+            message: "A new article has been uploaded!.",
+            to_email: usr.email,
+            link: `${BASE_URL}/articles`,
+          };
+
+          await emailjs.send(
+            config[0],
+            config[1],
+
+            templateParams,
+            config[2]
+          );
+        }
+      }
     } catch (error) {
       console.error("Error uploading files: ", error);
       setError("Failed to upload files. Please try again.");
