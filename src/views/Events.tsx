@@ -19,7 +19,8 @@ import { Event as TypeEvent } from "../../data/Event";
 function Events() {
   const [showForm, setShowForm] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [filteredEvents, setFilteredEvents] = useState<TypeEvent[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -34,6 +35,19 @@ function Events() {
     });
   }, []);
 
+  useEffect(() => {
+    if (selectedDate) {
+      const filtered = events.filter(
+        (event: TypeEvent) =>
+          new Date(event.eventDate).toDateString() ===
+          selectedDate.toDateString()
+      );
+      setFilteredEvents(filtered);
+    } else {
+      setFilteredEvents(events);
+    }
+  }, [selectedDate, events]);
+
   const handleUploadClick = () => {
     setShowForm(!showForm);
   };
@@ -43,9 +57,11 @@ function Events() {
   };
 
   const handleDateChange = (date: Date | null) => {
-    if (date) {
-      setSelectedDate(date);
-    }
+    setSelectedDate(date);
+  };
+
+  const clearDateFilter = () => {
+    setSelectedDate(null);
   };
 
   const handleFormSubmit = async (data: any) => {
@@ -162,13 +178,19 @@ function Events() {
                 dateFormat="dd/MM/yyyy"
                 inline
               />
+              <button
+                onClick={clearDateFilter}
+                className="mt-2 px-4 py-2 bg-red-500 text-white rounded"
+              >
+                Clear Calendar
+              </button>
             </div>
           )}
           <div className="flex-1 overflow-scroll no-scrollbar mt-4 pb-[100px] px-2">
-            {events.map((event: TypeEvent, index: number) => (
+            {filteredEvents.map((event: TypeEvent, index: number) => (
               <Event key={index} event={event} setError={setError} />
             ))}
-            {events?.length <= 0 && (
+            {filteredEvents?.length <= 0 && (
               <h1 className="text-center text-4xl text-white mt-8">
                 No Events Yet
               </h1>
