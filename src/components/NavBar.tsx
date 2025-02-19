@@ -33,7 +33,7 @@ function NavBar() {
         <Button text="EVENTS" path="/events" />
         <Button text="ARTICLES" path="/articles" />
         <Button text="COFESSIONS" path="/confessions" />
-        <Button text="SUGGEST US" path="/" />
+        <Button text="SUGGEST US" path="/suggestus" />
         {auth?.currentUser && (
           <button
             className="px-4 md md:px-0 md:min-w-[130px] lg:min-w-[140px] text-nowrap py-2  rounded-full border border-white text-center text-md text-white poppins-semibold"

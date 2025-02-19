@@ -10,6 +10,7 @@ import Posts from "./views/Posts";
 import Events from "./views/Events";
 import Articles from "./views/Articles";
 import Confessions from "./views/Confessions";
+import SuggestUs from "./views/SuggestUs";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/events" element={<Events />} />
           <Route path="/articles" element={<Articles />} />
           <Route path="/confessions" element={<Confessions />} />
+          <Route path="/suggestus" element={<SuggestUs />} />
         </Routes>
       </Router>
     </DataContextProvider>
