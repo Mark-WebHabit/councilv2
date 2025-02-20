@@ -9,6 +9,7 @@ import {
   sendEmailVerification,
   signInWithEmailAndPassword,
   signOut,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { auth, db } from "../../firebase";
 import { ref, set } from "firebase/database";
@@ -227,12 +228,6 @@ function Auth() {
                 />
               )}
               <div className="w-[90%]">
-                {!isSignup &&
-                  // <div className="flex items-center gap-2 mt-4">
-                  //   <div className="w-[20px] aspect-square bg-[var(--gray)] border-2 border-white" />
-                  //   <p className="text-white text-xl font-bold">REMEMBER ME</p>
-                  // </div>
-                  null}
                 {isSignup && (
                   <div
                     className="flex items-center gap-2 mt-4 "
@@ -260,7 +255,31 @@ function Auth() {
               </div>
 
               {isSignup && (
-                <small className="text-blue-700">TERMS AND CONDITIONS</small>
+                <p className="text-blue-700 text-2xl">TERMS AND CONDITIONS</p>
+              )}
+
+              {!isSignup && (
+                <small
+                  className="text-blue-700 cursor-pointer"
+                  onClick={async () => {
+                    if (!email) {
+                      setError("Enter your email first");
+                      return;
+                    }
+
+                    try {
+                      await sendPasswordResetEmail(auth, email);
+
+                      setSuccess(
+                        "Password reset has been sent through your email"
+                      );
+                    } catch (error: any) {
+                      setError(error?.message);
+                    }
+                  }}
+                >
+                  Forgot Password
+                </small>
               )}
 
               <div className="w-full flex justify-end mt-4">
