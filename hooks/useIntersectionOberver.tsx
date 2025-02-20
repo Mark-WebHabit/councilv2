@@ -3,7 +3,7 @@ import { auth } from "../firebase";
 
 const useIntersectionObserver = (callback: (element: Element) => void) => {
   if (!auth?.currentUser?.uid) {
-    return;
+    return () => {}; // Return a no-op function instead of undefined
   }
 
   const observerRef = useRef<IntersectionObserver | null>(null);
