@@ -104,6 +104,11 @@ function Videos() {
 
         {/* Video Display */}
         <div className="space-y-6  pt-4">
+          {!videos?.length && (
+            <h1 className="text-center text-3xl text-white ">
+              No Videos/Live Yet
+            </h1>
+          )}
           {videos.map((video: Vid, index: number) => (
             <div
               key={index}
