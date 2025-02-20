@@ -17,7 +17,7 @@ function RecentArticle({ article, setActive }: RecentArticleProps) {
         {article?.assets?.length > 0 && (
           <img src={article.assets[0].url} alt="" className="aspect-square" />
         )}
-        <p className="my-4 bg-[var(--postbg)] text-center text-white uppercase text-xl py-3 rounded-2xl">
+        <p className="my-4 bg-[var(--postbg)] text-center text-white uppercase text-md py-3 rounded-2xl">
           POSTED ON {formatDateString(article.datePosted)}
         </p>
       </div>
@@ -26,8 +26,13 @@ function RecentArticle({ article, setActive }: RecentArticleProps) {
           {article.title.substring(0, 50)}
         </h2>
         <div
-          className="text-white font-semibold uppercase text-sm mt-8"
-          dangerouslySetInnerHTML={{ __html: truncate(article.body, 250) }}
+          className="text-white font-light uppercase text-sm mt-8"
+          dangerouslySetInnerHTML={{
+            __html: truncate(
+              article.body.replace(/style="[^"]*color:[^"]*"/gi, ""),
+              250
+            ),
+          }}
         />
       </div>
     </div>

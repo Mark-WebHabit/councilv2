@@ -27,7 +27,7 @@ function Confessions() {
   const [newComment, setNewComment] = useState("");
   const [newReply, setNewReply] = useState("");
 
-  const { confessions } = useContext(DataContext);
+  const { confessions, isAdmin } = useContext(DataContext);
 
   const navigate = useNavigate();
 
@@ -257,10 +257,12 @@ function Confessions() {
             key={confession.id}
             className="bg-white p-4 rounded-lg shadow-md relative"
           >
-            <FaTrashAlt
-              className="absolute text-3xl text-red-700 right-4"
-              onClick={() => handleDelete(confession.id)}
-            />
+            {isAdmin && (
+              <FaTrashAlt
+                className="absolute text-3xl text-red-700 right-4"
+                onClick={() => handleDelete(confession.id)}
+              />
+            )}
             <div className="flex items-center space-x-4">
               <div className="w-8 h-8 bg-gray-300 rounded-full">
                 <img

@@ -337,9 +337,15 @@ function Articles() {
 
               <div className="body mt-5">
                 <div
-                  className="text-xl text-white max-w-[700px] uppercase"
+                  className="text-xl font-light text-white max-w-[700px] uppercase"
+                  style={{
+                    color: "white",
+                  }}
                   dangerouslySetInnerHTML={{
-                    __html: active.body,
+                    __html: active.body.replace(
+                      /style="[^"]*color:[^"]*"/g,
+                      ""
+                    ),
                   }}
                 />
               </div>
