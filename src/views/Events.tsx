@@ -5,17 +5,19 @@ import NavBar from "../components/NavBar";
 import Event from "../components/Event";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FaCalendarAlt, FaTimes } from "react-icons/fa";
-import { DataContext } from "../../context/DataContext";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import UploadFormEvent from "../components/UploadFormEvent";
+import Modal from "../components/Modal";
+import { FaCalendarAlt, FaTimes } from "react-icons/fa";
+import { DataContext } from "../../context/DataContext";
 import { storage } from "../../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { ref as dbRef, set } from "firebase/database";
 import { db } from "../../firebase";
-import Modal from "../components/Modal";
 import { config } from "../../utilities/emailjs";
+import { auth } from "../../firebase";
+import { useNavigate } from "react-router-dom";
 
 import { Event as TypeEvent } from "../../data/Event";
 import { BASE_URL } from "../../utilities/BASE_URL";
@@ -27,7 +29,14 @@ function Events() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
   const { events, isAdmin, users } = useContext(DataContext);
+
+  useEffect(() => {
+    if (!auth?.currentUser?.uid) {
+      navigate("/auth");
+    }
+  }, [auth]);
 
   useEffect(() => {
     AOS.init({

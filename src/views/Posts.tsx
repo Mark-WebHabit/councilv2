@@ -14,6 +14,8 @@ import { Post as TypePost } from "../../data/Post";
 
 import { config } from "../../utilities/emailjs";
 import { BASE_URL } from "../../utilities/BASE_URL";
+import { auth } from "../../firebase";
+import { useNavigate } from "react-router-dom";
 
 function Posts() {
   const { posts } = useContext(DataContext);
@@ -21,6 +23,13 @@ function Posts() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { isAdmin, users } = useContext(DataContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!auth?.currentUser?.uid) {
+      navigate("/auth");
+    }
+  }, [auth]);
 
   useEffect(() => {
     AOS.init({

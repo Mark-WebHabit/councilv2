@@ -23,6 +23,8 @@ import { ref as dbRef, push, ref, remove, update } from "firebase/database";
 import { formatDateString } from "../../utilities/date";
 import { config } from "../../utilities/emailjs";
 import { BASE_URL } from "../../utilities/BASE_URL";
+import { auth } from "../../firebase";
+import { useNavigate } from "react-router-dom";
 
 function Articles() {
   const { isAdmin } = useContext(DataContext);
@@ -41,8 +43,14 @@ function Articles() {
   const [error, setError] = useState("");
   const [active, setActive] = useState<Article | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const navigate = useNavigate();
   const { articles, users } = useContext(DataContext);
+
+  useEffect(() => {
+    if (!auth?.currentUser?.uid) {
+      navigate("/auth");
+    }
+  }, [auth]);
 
   useEffect(() => {
     setCurrentIndex(0);

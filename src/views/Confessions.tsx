@@ -1,5 +1,5 @@
 import NavBar from "../components/NavBar";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 
 import { db } from "../../firebase";
 import { ref, push, set, remove, get } from "firebase/database";
@@ -8,6 +8,7 @@ import { DataContext } from "../../context/DataContext";
 import { Confession } from "../../data/Confession";
 import { maskId } from "../../utilities/maskId";
 import { FaTrashAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 interface Comment {
   id: string;
@@ -27,6 +28,14 @@ function Confessions() {
   const [newReply, setNewReply] = useState("");
 
   const { confessions } = useContext(DataContext);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!auth?.currentUser?.uid) {
+      navigate("/auth");
+    }
+  }, [auth]);
 
   const handleReplyClick = (commentId: string) => {
     setReplyingTo((prev) => (prev === commentId ? null : commentId));

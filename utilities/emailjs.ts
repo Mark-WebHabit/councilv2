@@ -1,11 +1,11 @@
 export const config = [
-  "service_lsoyrun",
-  "template_fqs8zdt",
-  "CgAESiaUJmyydd236",
+  "service_pjk1shu",
+  "template_bssge5h",
+  "iK1z2KJ_6earKPQD9",
 ];
 
 export const configSuggest = [
-  "service_lsoyrun",
-  "template_0oern1p",
-  "CgAESiaUJmyydd236",
+  "service_pjk1shu",
+  "template_6hwq9dc",
+  "iK1z2KJ_6earKPQD9",
 ];
