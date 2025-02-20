@@ -11,6 +11,7 @@ import Events from "./views/Events";
 import Articles from "./views/Articles";
 import Confessions from "./views/Confessions";
 import SuggestUs from "./views/SuggestUs";
+import Videos from "./views/Videos";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/articles" element={<Articles />} />
           <Route path="/confessions" element={<Confessions />} />
           <Route path="/suggestus" element={<SuggestUs />} />
+          <Route path="/videos" element={<Videos />} />
         </Routes>
       </Router>
     </DataContextProvider>

@@ -12,6 +12,7 @@ import { Event } from "../data/Event";
 import { Like } from "../data/Like";
 import { Article } from "../data/Article";
 import { Confession, Comment, Reply } from "../data/Confession";
+import { Videos } from "../data/Videos";
 interface View {
   id: string;
   users: string[];
@@ -31,6 +32,7 @@ function DataContextProvider({ children }: { children: ReactNode }) {
   const [highlights, setHighlights] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [confessions, setConfessions] = useState<Confession[]>([]);
+  const [videos, setVideos] = useState<Videos[]>([]);
 
   useEffect(() => {
     const usersRef = ref(db, "users");
@@ -57,6 +59,43 @@ function DataContextProvider({ children }: { children: ReactNode }) {
         setUsers(uniqueUsers);
       } else {
         setUsers([]);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const videosRef = ref(db, "videos");
+
+    const unsubscribe = onValue(videosRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const videosArray = Object.keys(data).map((key) => ({
+          id: key,
+          ...data[key],
+        }));
+
+        // Ensure every video has a valid `datePosted`
+        const uniqueVideos = new Map();
+        videosArray.forEach((vid) => {
+          if (!uniqueVideos.has(vid.embed)) {
+            uniqueVideos.set(vid.embed, {
+              ...vid,
+              datePosted: vid.datePosted || "1970-01-01T00:00:00.000Z", // Default full ISO format
+            });
+          }
+        });
+
+        // Convert Map to array and sort by `datePosted`
+        const sortedVideos = Array.from(uniqueVideos.values()).sort(
+          (a, b) =>
+            new Date(b.datePosted).getTime() - new Date(a.datePosted).getTime()
+        );
+
+        setVideos(sortedVideos);
+      } else {
+        setVideos([]);
       }
     });
 
@@ -341,7 +380,6 @@ function DataContextProvider({ children }: { children: ReactNode }) {
                 comments: mapComments(key), // Attach comments with replies
               }));
 
-              console.log(structuredConfessions);
               setConfessions(structuredConfessions);
             });
           });
@@ -377,6 +415,7 @@ function DataContextProvider({ children }: { children: ReactNode }) {
         highlights,
         users,
         confessions,
+        videos,
       }}
     >
       {children}
