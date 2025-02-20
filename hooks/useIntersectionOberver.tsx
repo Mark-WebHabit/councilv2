@@ -1,6 +1,11 @@
 import { useEffect, useRef } from "react";
+import { auth } from "../firebase";
 
 const useIntersectionObserver = (callback: (element: Element) => void) => {
+  if (!auth?.currentUser?.uid) {
+    return;
+  }
+
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
