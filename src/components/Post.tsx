@@ -140,7 +140,7 @@ function Post({ post, setError }: PostProps) {
     >
       <div className="author flex items-center gap-4 w-full">
         <img
-          src="/images/logo.jpg"
+          src="/images/logo.png"
           className="w-[60px] aspect-square rounded-full"
           alt=""
         />

@@ -101,10 +101,10 @@ function Home() {
           data-aos="fade-right"
         >
           <h1 className="text-5xl md:text-7xl lg:text-9xl trend font-bold text-white shadow-text">
-            KNOW
+            Welcome
           </h1>
-          <h1 className="text-5xl md:text-7xl lg:text-9xl font-extrabold trend text-white shadow-text">
-            YOUR WAY
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold trend text-white shadow-text">
+            Red Spartan
           </h1>
 
           <p className="text-xl md:text-3xl lg:text-4xl trendOne font-bold playfair-display shadow-text-pink text-[#ff4ff3] mt-5">

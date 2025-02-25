@@ -18,7 +18,7 @@ function NavBar() {
       <Link to={"/"}>
         <div className="logo flex items-center gap-2">
           <img
-            src="/images/logo.jpg"
+            src="/images/logo.png"
             alt="Logo"
             className="w-[52px] aspect-square rounded-full"
           />
