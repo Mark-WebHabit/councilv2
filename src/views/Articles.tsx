@@ -32,10 +32,8 @@ function Articles() {
   const [fileAssets, setFileAssets] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<Article>({
-    logo: "",
     body: "",
     datePosted: "",
-    author: "",
     title: "",
     assets: [],
     isHighlight: false,
@@ -89,25 +87,6 @@ function Articles() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!formData.logo) {
-      setError("Logo is required");
-      return;
-    }
-
-    // Validate logo
-    if (formData.logo instanceof File) {
-      const logoFile = formData.logo;
-      const validLogoTypes = ["image/jpeg", "image/png", "image/jpg"];
-      if (!validLogoTypes.includes(logoFile.type)) {
-        setError("Logo must be a JPG, JPEG, or PNG file.");
-        return;
-      }
-      if (logoFile.size > 3 * 1024 * 1024) {
-        setError("Logo must be less than 3MB.");
-        return;
-      }
-    }
-
     // Validate assets
     if (fileAssets.length === 0) {
       setError("Please upload at least one asset.");
@@ -135,16 +114,6 @@ function Articles() {
 
     try {
       setLoading(true);
-      // Upload logo
-      let logoUrl = "";
-      if (formData.logo instanceof File) {
-        const logoStorageRef = storageRef(
-          storage,
-          `logos/${formData.logo.name}`
-        );
-        await uploadBytes(logoStorageRef, formData.logo);
-        logoUrl = await getDownloadURL(logoStorageRef);
-      }
 
       // Upload assets
       const assetUrls: Media[] = [];
@@ -159,17 +128,14 @@ function Articles() {
       const articlesRef = dbRef(db, "articles");
       await push(articlesRef, {
         ...formData,
-        logo: logoUrl,
         assets: assetUrls,
         datePosted: new Date().toISOString(),
       });
       setIsModalOpen(false);
       // Reset form
       setFormData({
-        logo: "",
         body: "",
         datePosted: "",
-        author: "",
         title: "",
         assets: [],
 
@@ -258,16 +224,12 @@ function Articles() {
             <div className="flex-1 overflow-scroll no-scrollbar">
               <div className="author flex items-center">
                 <img
-                  src={
-                    active?.logo instanceof File
-                      ? URL.createObjectURL(active.logo)
-                      : active?.logo
-                  }
+                  src="/images/lalik.jpg"
                   alt="Logo"
                   className="w-[50p6] h-[60px] rounded-full"
                 />
-                <p className="max-w-[300px] text-xl uppercase font-bold text-white ml-4">
-                  {active.author}
+                <p className="max-w-[350px] text-[18px] uppercase font-bold text-white ml-4">
+                  The LATHE HS & Ang LALIK Hayskul
                 </p>
               </div>
 
@@ -387,15 +349,6 @@ function Articles() {
               className="max-h-[700px] overflow-scroll"
             >
               <div className="mb-4">
-                <label className="block text-gray-700">Logo</label>
-                <input
-                  type="file"
-                  name="logo"
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full outline-0"
-                />
-              </div>
-              <div className="mb-4">
                 <label className="block text-gray-700">
                   Assets (Images/Videos)
                 </label>
@@ -407,16 +360,7 @@ function Articles() {
                   multiple
                 />
               </div>
-              <div className="mb-4">
-                <label className="block text-gray-700">Author</label>
-                <input
-                  type="text"
-                  name="author"
-                  value={formData.author}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full py-2 border-2 px-3 border-blue-500 outline-0"
-                />
-              </div>
+
               <div className="mb-4">
                 <label className="block text-gray-700">Title</label>
                 <input
